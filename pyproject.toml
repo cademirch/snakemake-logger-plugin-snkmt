@@ -1,0 +1,70 @@
+[project]
+name = "snakemake-logger-plugin-snkmt"
+version = "0.1.0"
+description = "Snakemake logger plugin that writes logs to SQLite database."
+readme = "README.md"
+authors = [{ name = "Cade Mirchandani", email = "cmirchan@ucsc.edu" }]
+requires-python = "<4.0,>=3.11"
+dependencies = [
+    "snakemake-interface-logger-plugins>=1.2.0",
+    "sqlalchemy>=2.0.38",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3.5", "snakemake>=9.0.1", "ruff>=0.9.10", "loguru>=0.7.3"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "linux-64"]
+
+[tool.pixi.pypi-dependencies]
+snakemake-logger-plugin-snkmt = { path = ".", editable = true }
+
+[tool.pixi.environments]
+dev = { features = ["dev"] }
+publish = { features = ["publish"] }
+
+[tool.pixi.feature.dev.dependencies]
+pytest = ">=8.3.5,<9"
+ruff = ">=0.10.0,<0.11"
+mypy = ">=1.15.0,<2"
+pytest-cov = ">=6.0.0,<7"
+
+[tool.pixi.feature.dev.pypi-dependencies]
+snakemake-interface-logger-plugins = { git = "https://github.com/snakemake/snakemake-interface-logger-plugins.git" }
+snkmt = {path = "../snkmt", editable=true}
+
+[tool.mypy]
+ignore_missing_imports = true # Temporary until https://github.com/snakemake/snakemake-interface-common/pull/55
+disallow_untyped_defs = true
+warn_no_return = true
+
+[tool.pixi.feature.dev.tasks]
+format = "ruff format src"
+lint = "ruff check"
+type-check = "mypy src/"
+qc = { depends-on = ["format", "lint", "type-check"] }
+
+[tool.pixi.feature.dev.tasks.test]
+cmd = [
+  "pytest",
+  "--cov=snakemake_logger_plugin_snkmt",
+  "--cov-report=xml:coverage-report/coverage.xml",
+  "--cov-report=term-missing",
+]
+
+
+# Publish
+[tool.pixi.feature.publish.dependencies]
+twine = ">=6.1.0,<7"
+python-build = ">=1.2.2,<2"
+
+[tool.pixi.feature.publish.tasks]
+build = { cmd = "python -m build", description = "Build the package into the dist/ directory" }
+check-build = { cmd = "python -m twine check dist/*", depends-on = [
+  "build",
+], description = "Check that the package can be uploaded" }
