@@ -8,7 +8,6 @@ from datetime import datetime
 from snakemake_interface_logger_plugins.common import LogEvent
 from snakemake_interface_logger_plugins.settings import OutputSettingsLoggerInterface
 from snkmt.db.session import Database
-from snkmt.db.models.base import Base
 from snkmt.db.models.workflow import Workflow
 from snkmt.db.models.error import Error
 from snkmt.db.models.enums import Status
@@ -48,9 +47,8 @@ class sqliteLogHandler(Handler):
         """
         super().__init__()
 
-        self.db_manager = Database.get_database(db_path)
+        self.db_manager = Database(db_path=db_path, auto_migrate=False, create_db=True)
         self.common_settings = common_settings
-        Base.metadata.create_all(self.db_manager.engine)
 
         self.event_handlers: dict[str, EventHandler] = {  # type: ignore
             LogEvent.WORKFLOW_STARTED.value: WorkflowStartedHandler(),
@@ -142,7 +140,7 @@ class sqliteLogHandler(Handler):
 
                         if error:
                             workflow.status = Status.ERROR
-                        elif workflow.progress >= 100:
+                        elif workflow.progress >= 1:
                             workflow.status = Status.SUCCESS
 
             except Exception as e:

@@ -63,11 +63,12 @@ def snakemake_session(temp_workflow_dir):
     db_path = Path(temp_workflow_dir, ".snakemake", "log", "snakemake.log.db").resolve()
     db_url = f"sqlite:///{db_path}"
 
-    # Run Snakemake with the SQLite logger
     cmd = [
         "snakemake",
         "--logger",
         "snkmt",
+        "--logger-snkmt-db",
+        str(db_path),
         "-c1",
         "--no-hooks",
     ]
