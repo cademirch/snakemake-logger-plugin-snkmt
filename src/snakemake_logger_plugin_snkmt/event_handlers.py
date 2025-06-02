@@ -1,6 +1,7 @@
 from datetime import datetime
 from logging import LogRecord
 
+from pathlib import Path
 from typing import Any, Dict, Optional
 
 from sqlalchemy.orm import Session
@@ -193,7 +194,8 @@ class JobInfoHandler(EventHandler):
             return
 
         for path in file_paths:
-            file = File(path=path, file_type=file_type, job_id=job.id)
+            abs_path = Path(path).resolve()
+            file = File(path=str(abs_path), file_type=file_type, job_id=job.id)
             session.add(file)
 
 

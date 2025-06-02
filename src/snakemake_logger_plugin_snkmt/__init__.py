@@ -1,4 +1,5 @@
 from snakemake_interface_logger_plugins.base import LogHandlerBase
+from snakemake_interface_logger_plugins.settings import LogHandlerSettingsBase
 from snakemake_logger_plugin_snkmt.log_handler import sqliteLogHandler
 
 

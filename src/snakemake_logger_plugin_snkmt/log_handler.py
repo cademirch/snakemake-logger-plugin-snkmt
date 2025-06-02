@@ -10,7 +10,9 @@ from snakemake_interface_logger_plugins.settings import OutputSettingsLoggerInte
 from snkmt.db.session import Database
 from snkmt.db.models.base import Base
 from snkmt.db.models.workflow import Workflow
+from snkmt.db.models.error import Error
 from snkmt.db.models.enums import Status
+
 
 from snakemake_logger_plugin_snkmt.event_handlers import (
     EventHandler,
@@ -121,12 +123,28 @@ class sqliteLogHandler(Handler):
         if self.context.get("current_workflow_id"):
             try:
                 with self.session_scope() as session:
-                    workflow = session.query(Workflow).get(
-                        self.context["current_workflow_id"]
+                    workflow = (
+                        session.query(Workflow)
+                        .filter(Workflow.id == self.context["current_workflow_id"])
+                        .first()
                     )
-                    if workflow and workflow.status != Status.ERROR:
-                        workflow.status = Status.SUCCESS
+                    error = (
+                        session.query(Error)
+                        .filter(
+                            Error.workflow_id == self.context["current_workflow_id"]
+                        )
+                        .first()
+                    )
+
+                    if workflow:
+                        workflow.status = Status.UNKNOWN
                         workflow.end_time = datetime.utcnow()
+
+                        if error:
+                            workflow.status = Status.ERROR
+                        elif workflow.progress >= 100:
+                            workflow.status = Status.SUCCESS
+
             except Exception as e:
                 self.handleError(
                     logging.LogRecord(
