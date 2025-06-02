@@ -36,7 +36,8 @@ pytest-cov = ">=6.0.0,<7"
 
 [tool.pixi.feature.dev.pypi-dependencies]
 snakemake-interface-logger-plugins = { git = "https://github.com/snakemake/snakemake-interface-logger-plugins.git" }
-snkmt = {path = "../snkmt", editable=true}
+snkmt = {git = "https://github.com/cademirch/snkmt.git", editable=true}
+
 
 [tool.mypy]
 ignore_missing_imports = true # Temporary until https://github.com/snakemake/snakemake-interface-common/pull/55
