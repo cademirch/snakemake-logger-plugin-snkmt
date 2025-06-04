@@ -13,7 +13,7 @@ This is the logging plugin for use with [snkmt](https://github.com/cademirch/snk
 >Note: Regular Snakemake logs will continue to be written to stderr when using this plugin, so it may appear that the plugin is not doing anything. This behavior will change in future versions.
 
 ## Options
-- `--logger-snkmt-db </path/to/sqlite.db"` Where to write the snkmt DB.
+- `--logger-snkmt-db </path/to/sqlite.db>"` Where to write the snkmt DB.
 
 ## License
 
