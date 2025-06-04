@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.2](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.1...v0.1.2) (2025-06-04)
+
+
+### Documentation
+
+* update readme ([9b815a1](https://github.com/cademirch/snakemake-logger-plugin-snkmt/commit/9b815a19370692e05a1356765ba6c3d8570c940d))
+* update readme ([e74fe0f](https://github.com/cademirch/snakemake-logger-plugin-snkmt/commit/e74fe0f72f0e0b00d45161edbccd1ac8f06cbd95))
+* Update README.md ([9410f78](https://github.com/cademirch/snakemake-logger-plugin-snkmt/commit/9410f782c50a6d93d9b3428ed1142f71313f1b52))
+
 ## [0.1.1](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.0...v0.1.1) (2025-06-03)
 
 
