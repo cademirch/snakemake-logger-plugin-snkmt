@@ -11,7 +11,7 @@ The **Snakemake Logger Plugin: snkmt** is a logger plugin for Snakemake that wri
 2. Run Snakemake with the `--logger snkmt` option to enable the snkmt logger. 
 
 ## Options
-TODO
+- `--logger-snkmt-db </path/to/sqlite.db"` Where to write the snkmt DB.
 
 ## Design
 1. **Log Handler**:
