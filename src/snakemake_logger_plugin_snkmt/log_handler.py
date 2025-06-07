@@ -15,16 +15,6 @@ from snkmt.db.models.enums import Status
 
 from snakemake_logger_plugin_snkmt.event_handlers import (
     EventHandler,
-    WorkflowStartedHandler,
-    JobInfoHandler,
-    JobStartedHandler,
-    JobFinishedHandler,
-    JobErrorHandler,
-    RuleGraphHandler,
-    GroupInfoHandler,
-    GroupErrorHandler,
-    ErrorHandler,
-    RunInfoHandler,
 )
 
 
@@ -50,23 +40,7 @@ class sqliteLogHandler(Handler):
         self.db_manager = Database(db_path=db_path, auto_migrate=False, create_db=True)
         self.common_settings = common_settings
 
-        self.event_handlers: dict[str, EventHandler] = {  # type: ignore
-            LogEvent.WORKFLOW_STARTED.value: WorkflowStartedHandler(),
-            LogEvent.JOB_INFO.value: JobInfoHandler(),
-            LogEvent.JOB_STARTED.value: JobStartedHandler(),
-            LogEvent.JOB_FINISHED.value: JobFinishedHandler(),
-            LogEvent.JOB_ERROR.value: JobErrorHandler(),
-            LogEvent.RULEGRAPH.value: RuleGraphHandler(),
-            LogEvent.GROUP_INFO.value: GroupInfoHandler(),
-            LogEvent.GROUP_ERROR.value: GroupErrorHandler(),
-            LogEvent.ERROR.value: ErrorHandler(),
-            LogEvent.RUN_INFO.value: RunInfoHandler(),
-        }
-
-        self.context = {
-            "current_workflow_id": None,
-            "dryrun": self.common_settings.dryrun,
-        }
+        self.event_handler = EventHandler(dryrun=common_settings.dryrun)
 
     @contextmanager
     def session_scope(self) -> Generator[Session, Any, Any]:
@@ -98,19 +72,13 @@ class sqliteLogHandler(Handler):
             record: The log record to process.
         """
         try:
-            event = getattr(record, "event", None)
+            event: Optional[LogEvent] = getattr(record, "event", None)
 
             if not event:
                 return
 
-            event_value = event.value if hasattr(event, "value") else str(event).lower()
-
-            handler = self.event_handlers.get(event_value)
-            if not handler:
-                return
-
             with self.session_scope() as session:
-                handler.handle(record, session, self.context)
+                self.event_handler.handle(event, record, session)
 
         except Exception:
             self.handleError(record)
@@ -118,18 +86,18 @@ class sqliteLogHandler(Handler):
     def close(self) -> None:
         """Close the handler and update the workflow status."""
 
-        if self.context.get("current_workflow_id"):
+        if self.event_handler.current_workflow_id:
             try:
                 with self.session_scope() as session:
                     workflow = (
                         session.query(Workflow)
-                        .filter(Workflow.id == self.context["current_workflow_id"])
+                        .filter(Workflow.id == self.event_handler.current_workflow_id)
                         .first()
                     )
                     error = (
                         session.query(Error)
                         .filter(
-                            Error.workflow_id == self.context["current_workflow_id"]
+                            Error.workflow_id == self.event_handler.current_workflow_id
                         )
                         .first()
                     )
