@@ -1,0 +1,3 @@
+This is the logging plugin for use with [snkmt](https://github.com/cademirch/snkmt), a monitoring tool for Snakemake workflows. Please refer to [snkmt's](https://github.com/cademirch/snkmt) documentation for more details.
+
+**This plugin is still under development and thus may not be fully stable or feature-complete. Use it at your own discretion and report any issues or suggestions to the repository's issue tracker.**
