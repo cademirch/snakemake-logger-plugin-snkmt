@@ -1,6 +1,6 @@
 [project]
 name = "snakemake-logger-plugin-snkmt"
-version = "0.1.1"
+version = "0.1.2"
 description = "Snakemake logger plugin that writes logs to SQLite database."
 readme = "README.md"
 authors = [{ name = "Cade Mirchandani", email = "cmirchan@ucsc.edu" }]
