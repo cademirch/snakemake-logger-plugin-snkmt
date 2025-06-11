@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.2...v0.1.3) (2025-06-11)
+
+
+### Bug Fixes
+
+* Update pyproject.toml ([e07953b](https://github.com/cademirch/snakemake-logger-plugin-snkmt/commit/e07953b589bb17b3fd4ca9f27e94448b0c14b9e1))
+
 ## [0.1.2](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.1...v0.1.2) (2025-06-10)
 
 
