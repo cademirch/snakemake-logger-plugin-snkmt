@@ -7,7 +7,7 @@ authors = [{ name = "Cade Mirchandani", email = "cmirchan@ucsc.edu" }]
 requires-python = "<4.0,>=3.11"
 dependencies = [
     "snakemake-interface-logger-plugins>=1.2.0",
-    "sqlalchemy>=2.0.38", "snkmt>=0.1.0,<0.2",
+    "sqlalchemy>=2.0.38", "snkmt>=0.1.0,<0.2", "rich>=14.0.0,<15",
 ]
 
 [project.urls]

@@ -11,11 +11,14 @@ from snkmt.db.session import Database
 from snkmt.db.models.workflow import Workflow
 from snkmt.db.models.error import Error
 from snkmt.db.models.enums import Status
-
+from snkmt.version import VERSION as snkmt_version
+from importlib.metadata import version
 
 from snakemake_logger_plugin_snkmt.event_handlers import (
     EventHandler,
 )
+
+from snakemake_logger_plugin_snkmt.console import OptionsTable, console
 
 
 class sqliteLogHandler(Handler):
@@ -42,6 +45,17 @@ class sqliteLogHandler(Handler):
 
         self.event_handler = EventHandler(dryrun=common_settings.dryrun)
 
+        snkmt_table = OptionsTable(
+            [
+                ("snkmt Version:", snkmt_version),
+                ("Plugin Version:", version("snakemake_logger_plugin_snkmt")),
+                ("Database:", self.db_manager.db_path),
+            ],
+            value_style="dim",
+        )
+        console.print("[bold]snkmt")
+        console.print(snkmt_table)
+        console.print("")
     @contextmanager
     def session_scope(self) -> Generator[Session, Any, Any]:
         """Provide a transactional scope around a series of operations."""

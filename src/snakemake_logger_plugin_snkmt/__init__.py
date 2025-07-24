@@ -31,7 +31,7 @@ class LogHandler(LogHandlerBase, sqliteLogHandler):
         """
         Whether this plugin writes to stderr/stdout
         """
-        return False
+        return True
 
     @property
     def writes_to_file(self) -> bool:

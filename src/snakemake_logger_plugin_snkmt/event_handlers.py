@@ -1,6 +1,7 @@
 from datetime import datetime
 from logging import LogRecord
 from pathlib import Path
+from time import sleep
 from typing import Dict, Optional
 from uuid import UUID
 
@@ -11,7 +12,7 @@ import snakemake_logger_plugin_snkmt.parsers as parsers
 from snkmt.db.models.enums import FileType, Status
 from snkmt.db.models import File, Job, Rule, Error, Workflow
 
-
+from snakemake_logger_plugin_snkmt.console import OptionsTable, console
 class EventHandler:
     """
     Unified event handler for processing Snakemake log events.
@@ -24,6 +25,7 @@ class EventHandler:
         self.current_workflow_id: Optional[UUID] = None
         self.jobs: Dict[int, int] = {}  # Snakemake job ID -> database job ID
         self.dryrun: bool = dryrun
+        self.dag_building_status = console.status("Building DAG...")
 
     def handle(self, event_type: LogEvent, record: LogRecord, session: Session) -> None:
         """Route events to appropriate handler methods"""
@@ -88,8 +90,20 @@ class EventHandler:
             status=Status.RUNNING,
         )
 
+        workflow_table = OptionsTable(
+            [
+                ("Workflow ID:", str(workflow_data.workflow_id)),
+                ("Snakefile:", str(workflow_data.snakefile)),
+            ],
+            value_style="dim",
+        )
+        console.print("[bold]Snakemake")
+        console.print(workflow_table)
+        console.print("")
+
         session.add(workflow)
         self.current_workflow_id = workflow_data.workflow_id
+        self.dag_building_status.start()
 
     def handle_run_info(self, record: LogRecord, session: Session) -> None:
         """Handle run info event"""
@@ -240,6 +254,7 @@ class EventHandler:
 
     def handle_error(self, record: LogRecord, session: Session) -> None:
         """Handle general error event"""
+        print(record)
         if not self.current_workflow_id:
             return
 
