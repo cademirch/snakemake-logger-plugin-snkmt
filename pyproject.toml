@@ -52,7 +52,9 @@ format = "ruff format src"
 lint = "ruff check"
 type-check = "mypy src/"
 qc = { depends-on = ["format", "lint", "type-check"] }
-
+snk_demo = "snakemake -s tests/Snakefile -d tests/demo --logger snkmt --cores 1 --logger-snkmt-db tests/demo/snkmt.db"
+demo_cleanup = "rm -rf tests/demo"
+demo = { depends-on = ["snk_demo", "demo_cleanup"] }
 [tool.pixi.feature.dev.tasks.test]
 cmd = [
   "pytest",

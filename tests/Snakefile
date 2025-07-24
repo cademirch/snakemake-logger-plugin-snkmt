@@ -1,0 +1,29 @@
+rule all:
+    input:
+        "output1.txt",
+        "output2.txt",
+        "combined.txt",
+
+
+rule create_file1:
+    output:
+        "output1.txt",
+    shell:
+        "echo 'Content from file 1' > {output}"
+
+
+rule create_file2:
+    output:
+        "output2.txt",
+    shell:
+        "echo 'Content from file 2' > {output}"
+
+
+rule combine_files:
+    input:
+        "output1.txt",
+        "output2.txt",
+    output:
+        "combined.txt",
+    shell:
+        "cat {input} > {output}"
