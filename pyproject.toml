@@ -39,7 +39,7 @@ pytest-cov = ">=6.0.0,<7"
 
 [tool.pixi.feature.dev.pypi-dependencies]
 snakemake-interface-logger-plugins = { git = "https://github.com/snakemake/snakemake-interface-logger-plugins.git" }
-snkmt = {path = "https://github.com/cademirch/snkmt.git", editable=true, branch="dev"}
+snkmt = {git = "https://github.com/cademirch/snkmt.git", editable=true, branch="dev"}
 
 
 [tool.mypy]
