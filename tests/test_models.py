@@ -7,11 +7,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
-from snkmt.db.models.workflow import Workflow
-from snkmt.db.models.rule import Rule
-from snkmt.db.models.job import Job
-from snkmt.db.models.file import File
-from snkmt.db.models.enums import Status, FileType
+from snkmt.core.models.workflow import Workflow
+from snkmt.core.models.rule import Rule
+from snkmt.core.models.job import Job
+from snkmt.core.models.file import File
+from snkmt.types.enums import Status, FileType
 
 
 @pytest.fixture(scope="module")

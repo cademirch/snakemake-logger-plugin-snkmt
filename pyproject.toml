@@ -7,7 +7,7 @@ authors = [{ name = "Cade Mirchandani", email = "cmirchan@ucsc.edu" }]
 requires-python = "<4.0,>=3.11"
 dependencies = [
     "snakemake-interface-logger-plugins>=1.2.0",
-    "sqlalchemy>=2.0.38", "snkmt>=0.1.0,<0.2",
+    "sqlalchemy>=2.0.38", "snkmt>=0.2.0",
 ]
 
 [project.urls]
@@ -39,7 +39,7 @@ pytest-cov = ">=6.0.0,<7"
 
 [tool.pixi.feature.dev.pypi-dependencies]
 snakemake-interface-logger-plugins = { git = "https://github.com/snakemake/snakemake-interface-logger-plugins.git" }
-snkmt = {git = "https://github.com/cademirch/snkmt.git", editable=true}
+snkmt = {git = "https://github.com/cademirch/snkmt.git", editable=true, branch="dev"}
 
 
 [tool.mypy]

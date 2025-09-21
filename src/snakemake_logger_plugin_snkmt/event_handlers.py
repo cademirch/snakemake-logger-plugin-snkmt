@@ -7,8 +7,8 @@ from typing import Any, Dict, Optional
 from sqlalchemy.orm import Session
 
 import snakemake_logger_plugin_snkmt.parsers as parsers
-from snkmt.db.models.enums import FileType, Status
-from snkmt.db.models import File, Job, Rule, Error, Workflow
+from snkmt.types.enums import FileType, Status
+from snkmt.core.models import File, Job, Rule, Error, Workflow
 
 """
 Context Dictionary Structure:
