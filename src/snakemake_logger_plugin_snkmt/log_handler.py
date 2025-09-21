@@ -120,7 +120,7 @@ class sqliteLogHandler(Handler):
         """Close the handler and update the workflow status."""
         # if db needs migrations, alembic messes with logging config and context is not set so this fails
         try:
-            if hasattr(self, 'context') and self.context.get("current_workflow_id"):
+            if hasattr(self, "context") and self.context.get("current_workflow_id"):
                 try:
                     with self.session_scope() as session:
                         workflow = (
