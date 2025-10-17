@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.4...v0.1.5) (2025-10-17)
+
+
+### Bug Fixes
+
+* set upper bound of logger plugin interface ([#10](https://github.com/cademirch/snakemake-logger-plugin-snkmt/issues/10)) ([c4760b2](https://github.com/cademirch/snakemake-logger-plugin-snkmt/commit/c4760b290e39b64ed8c740fd6bcf16d8546d1985))
+
 ## [0.1.4](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.3...v0.1.4) (2025-09-21)
 
 
