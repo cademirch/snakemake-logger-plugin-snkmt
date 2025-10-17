@@ -6,22 +6,20 @@ readme = "README.md"
 authors = [{ name = "Cade Mirchandani", email = "cmirchan@ucsc.edu" }]
 requires-python = "<4.0,>=3.11"
 dependencies = [
-    "snakemake-interface-logger-plugins>=1.2.0",
+    "snakemake-interface-logger-plugins>=1.2.0,<2",
     "sqlalchemy>=2.0.38", "snkmt>=0.2.0",
 ]
 
 [project.urls]
 repository = "https://github.com/cademirch/snakemake-logger-plugin-snkmt"
 
-[project.optional-dependencies]
-dev = ["pytest>=8.3.5", "snakemake>=9.0.1", "ruff>=0.9.10", "loguru>=0.7.3"]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.pixi.project]
-channels = ["conda-forge"]
+channels = ["conda-forge", "bioconda"]
 platforms = ["osx-arm64", "linux-64"]
 
 [tool.pixi.pypi-dependencies]
@@ -36,9 +34,9 @@ pytest = ">=8.3.5,<9"
 ruff = ">=0.10.0,<0.11"
 mypy = ">=1.15.0,<2"
 pytest-cov = ">=6.0.0,<7"
+snakemake = ">=9.13.1,<10"
 
 [tool.pixi.feature.dev.pypi-dependencies]
-snakemake-interface-logger-plugins = { git = "https://github.com/snakemake/snakemake-interface-logger-plugins.git" }
 snkmt = {git = "https://github.com/cademirch/snkmt.git", editable=true, branch="dev"}
 
 
