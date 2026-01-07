@@ -1,3 +1,4 @@
+from logging import LogRecord
 from snakemake_interface_logger_plugins.base import LogHandlerBase
 from snakemake_interface_logger_plugins.settings import LogHandlerSettingsBase
 from snakemake_logger_plugin_snkmt.log_handler import sqliteLogHandler
@@ -25,6 +26,10 @@ class LogHandler(LogHandlerBase, sqliteLogHandler):
             self.common_settings,
             db_path=self.settings.db,  # type: ignore
         )
+
+    def emit(self, record: LogRecord) -> None:
+        """Process a log record and store it in the database."""
+        sqliteLogHandler.emit(self, record)
 
     @property
     def writes_to_stream(self) -> bool:
