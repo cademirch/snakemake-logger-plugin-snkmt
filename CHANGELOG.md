@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.5...v0.1.6) (2026-01-07)
+
+
+### Bug Fixes
+
+* implement abstract emit method for interface v2.0.0 compatibility ([#14](https://github.com/cademirch/snakemake-logger-plugin-snkmt/issues/14)) ([5fcb7f9](https://github.com/cademirch/snakemake-logger-plugin-snkmt/commit/5fcb7f91a5f917c0bac3bc99ee3a08e33eaa0f49)), closes [#13](https://github.com/cademirch/snakemake-logger-plugin-snkmt/issues/13)
+
 ## [0.1.5](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.4...v0.1.5) (2025-10-17)
 
 
