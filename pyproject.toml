@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [{ name = "Cade Mirchandani", email = "cmirchan@ucsc.edu" }]
 requires-python = "<4.0,>=3.11"
 dependencies = [
-    "snakemake-interface-logger-plugins>=1.2.0,<2",
+    "snakemake-interface-logger-plugins>=1.2.0,<3",
     "sqlalchemy>=2.0.38", "snkmt>=0.2.0",
 ]
 
