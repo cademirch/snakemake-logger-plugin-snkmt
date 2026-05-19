@@ -189,7 +189,6 @@ class JobInfoHandler(EventHandler):
         file_type: FileType,
         session: Session,
     ) -> None:
-        """Helper method to add files of a specific type to a job"""
         if not file_paths:
             return
 
@@ -197,6 +196,27 @@ class JobInfoHandler(EventHandler):
             abs_path = Path(path).resolve()
             file = File(path=str(abs_path), file_type=file_type, job_id=job.id)
             session.add(file)
+
+
+class ShellCmdHandler(EventHandler):
+    def handle(
+        self, record: LogRecord, session: Session, context: Dict[str, Any]
+    ) -> None:
+        if "current_workflow_id" not in context or "jobs" not in context:
+            return
+
+        shell_data = parsers.ShellCmd.from_record(record)
+        if not shell_data.shellcmd:
+            return
+
+        snakemake_job_id = getattr(record, "jobid", None)
+        if snakemake_job_id is None or snakemake_job_id not in context["jobs"]:
+            return
+
+        db_job_id = context["jobs"][snakemake_job_id]
+        job = session.query(Job).get(db_job_id)
+        if job:
+            job.shellcmd = shell_data.shellcmd
 
 
 class JobStartedHandler(EventHandler):
