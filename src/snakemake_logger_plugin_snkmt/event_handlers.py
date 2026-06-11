@@ -134,6 +134,35 @@ class RunInfoHandler(EventHandler):
                     )
 
 
+class ProgressHandler(EventHandler):
+    def handle(
+        self, record: LogRecord, session: Session, context: Dict[str, Any]
+    ) -> None:
+        """Keep the workflow's total job count in sync with the live DAG.
+
+        Snakemake emits the ``run_info`` (job stats) event only once, before any
+        checkpoint runs. Checkpoints expand the DAG afterwards, so that initial
+        count is stale for workflows that use them. The ``progress`` event
+        carries ``total = len(workflow.dag)``, which reflects the current DAG
+        size, so we use it to update the total. We only ever increase it, never
+        regress to an earlier, smaller estimate.
+        """
+        workflow_id = context.get("current_workflow_id")
+        if not workflow_id:
+            return
+
+        progress = parsers.Progress.from_record(record)
+        if not progress.total:
+            return
+
+        workflow = session.query(Workflow).get(workflow_id)
+        if workflow and (
+            workflow.total_job_count is None
+            or progress.total > workflow.total_job_count
+        ):
+            workflow.total_job_count = progress.total
+
+
 class JobInfoHandler(EventHandler):
     def handle(
         self, record: LogRecord, session: Session, context: Dict[str, Any]
@@ -174,6 +203,14 @@ class JobInfoHandler(EventHandler):
         )
         session.add(job)
         session.flush()
+
+        # Keep the rule's total job count in sync with the jobs we actually see.
+        # Checkpoints expand the DAG after the initial run_info event, so rules
+        # spawned (or grown) by a checkpoint would otherwise keep the stale count
+        # from job stats (or 0 if they were absent entirely). Only ever increase.
+        rule_job_count = session.query(Job).filter_by(rule_id=rule.id).count()
+        if rule.total_job_count is None or rule_job_count > rule.total_job_count:
+            rule.total_job_count = rule_job_count
 
         self._add_files(job, job_data.input, FileType.INPUT, session)
         self._add_files(job, job_data.output, FileType.OUTPUT, session)

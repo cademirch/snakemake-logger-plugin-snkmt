@@ -27,6 +27,7 @@ from snakemake_logger_plugin_snkmt.event_handlers import (
     ErrorHandler,
     RunInfoHandler,
     ShellCmdHandler,
+    ProgressHandler,
 )
 
 
@@ -64,6 +65,7 @@ class sqliteLogHandler(Handler):
             LogEvent.ERROR.value: ErrorHandler(),
             LogEvent.RUN_INFO.value: RunInfoHandler(),
             LogEvent.SHELLCMD.value: ShellCmdHandler(),
+            LogEvent.PROGRESS.value: ProgressHandler(),
         }
 
         self.context = {
