@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.7](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.6...v0.1.7) (2026-06-11)
+
+
+### Bug Fixes
+
+* capture SHELLCMD events and persist shell commands to database ([#20](https://github.com/cademirch/snakemake-logger-plugin-snkmt/issues/20)) ([fccfe95](https://github.com/cademirch/snakemake-logger-plugin-snkmt/commit/fccfe95232d84561b38eea8fb15a0454ad9c2ebb))
+* track jobs created by checkpoints in workflow/rule totals ([#22](https://github.com/cademirch/snakemake-logger-plugin-snkmt/issues/22)) ([c087a8f](https://github.com/cademirch/snakemake-logger-plugin-snkmt/commit/c087a8f56e1997ad91a761508a36994bd0a8dca1))
+
 ## [0.1.6](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.5...v0.1.6) (2026-01-07)
 
 
