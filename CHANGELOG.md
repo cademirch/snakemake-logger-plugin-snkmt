@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.8](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.7...v0.1.8) (2026-07-15)
+
+
+### Bug Fixes
+
+* set SQLite busy_timeout to survive concurrent workflow writes ([#23](https://github.com/cademirch/snakemake-logger-plugin-snkmt/issues/23)) ([ddbde2f](https://github.com/cademirch/snakemake-logger-plugin-snkmt/commit/ddbde2f650aaabe54a9143441fcb61c586d6294d)), closes [#19](https://github.com/cademirch/snakemake-logger-plugin-snkmt/issues/19)
+
 ## [0.1.7](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.6...v0.1.7) (2026-06-11)
 
 
