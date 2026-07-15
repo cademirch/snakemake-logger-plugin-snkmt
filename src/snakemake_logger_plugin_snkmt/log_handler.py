@@ -1,5 +1,6 @@
 import logging
 from contextlib import contextmanager
+from sqlalchemy import event
 from sqlalchemy.orm import Session
 from typing import Optional, Generator, Any
 from logging import Handler, LogRecord
@@ -38,6 +39,11 @@ class sqliteLogHandler(Handler):
     event parsers and handlers to store them in a SQLite database.
     """
 
+    # How long SQLite waits for a held lock to clear before raising "database
+    # is locked". Generous, since single-row writes commit in milliseconds even
+    # with many concurrent Snakemake instances.
+    SQLITE_BUSY_TIMEOUT_MS = 30_000
+
     def __init__(
         self,
         common_settings: OutputSettingsLoggerInterface,
@@ -51,6 +57,7 @@ class sqliteLogHandler(Handler):
         super().__init__()
 
         self.db_manager = Database(db_path=db_path, auto_migrate=True, create_db=True)
+        self._configure_sqlite_concurrency(self.db_manager.engine)
         self.common_settings = common_settings
 
         self.event_handlers: dict[str, EventHandler] = {  # type: ignore
@@ -72,6 +79,28 @@ class sqliteLogHandler(Handler):
             "current_workflow_id": None,
             "dryrun": self.common_settings.dryrun,
         }
+
+    def _configure_sqlite_concurrency(self, engine: Any) -> None:
+        """Make concurrent access from several Snakemake instances robust.
+
+        SQLite defaults to a busy timeout of 0, so when another process holds
+        the write lock a query fails immediately with "database is locked".
+        Setting ``busy_timeout`` makes the connection wait (and internally
+        retry) for the lock instead. Applied to every pooled connection via the
+        ``connect`` event.
+
+        WAL mode is intentionally not enabled: the database may live on a
+        network filesystem (NFS/Lustre/GPFS), where WAL's shared-memory index
+        is unreliable. ``busy_timeout`` is filesystem-agnostic.
+        """
+
+        @event.listens_for(engine, "connect")
+        def _set_sqlite_pragma(dbapi_connection, connection_record):  # type: ignore[no-untyped-def]
+            cursor = dbapi_connection.cursor()
+            try:
+                cursor.execute(f"PRAGMA busy_timeout = {self.SQLITE_BUSY_TIMEOUT_MS}")
+            finally:
+                cursor.close()
 
     @contextmanager
     def session_scope(self) -> Generator[Session, Any, Any]:
