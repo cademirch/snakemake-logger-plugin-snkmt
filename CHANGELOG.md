@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.8...v0.1.9) (2026-10-09)
+
+
+### Bug Fixes
+
+* bump sqlalchemy ([#26](https://github.com/cademirch/snakemake-logger-plugin-snkmt/issues/26)) ([859de1f](https://github.com/cademirch/snakemake-logger-plugin-snkmt/commit/859de1f5622b7bfa1ecbfc6b3bd7c4082d06474e))
+
 ## [0.1.8](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.7...v0.1.8) (2026-07-15)
 
 
