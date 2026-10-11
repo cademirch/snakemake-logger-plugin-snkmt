@@ -65,7 +65,7 @@ cmd = [
 
 # Publish
 [tool.pixi.feature.publish.dependencies]
-twine = ">=6.1.0,<7"
+twine = ">=7.0.0,<8"
 python-build = ">=1.2.2,<2"
 
 [tool.pixi.feature.publish.tasks]
