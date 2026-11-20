@@ -1,7 +1,11 @@
+import functools
 import logging
+import os
 from contextlib import contextmanager
+import psutil
 from sqlalchemy import event
 from sqlalchemy.orm import Session
+from pathlib import Path
 from typing import Optional, Generator, Any
 from logging import Handler, LogRecord
 from datetime import datetime
@@ -32,6 +36,52 @@ from snakemake_logger_plugin_snkmt.event_handlers import (
 )
 
 
+# Snakemake's list plus ceph-fuse, which Snakemake misses.
+NETWORK_FS_TYPES = frozenset(
+    {
+        "afs",
+        "beegfs",
+        "ceph",
+        "cifs",
+        "fhgfs",
+        "fuse.ceph-fuse",
+        "fuse.juicefs",
+        "fuse.sshfs",
+        "glusterfs",
+        "gpfs",
+        "lustre",
+        "nfs",
+        "nfs3",
+        "nfs4",
+        "orangefs",
+        "pvfs2",
+        "smbfs",
+    }
+)
+
+
+@functools.cache
+def is_network_filesystem(path: Path | str) -> bool:
+    """Whether ``path`` resides on a network filesystem (modelled on Snakemake)."""
+    if os.name != "posix":
+        return False
+    try:
+        path_obj = Path(path).resolve()
+        best_match = max(
+            (
+                mount
+                for mount in psutil.disk_partitions(all=True)
+                if path_obj.is_relative_to(Path(mount.mountpoint).resolve())
+            ),
+            key=lambda part: len(Path(part.mountpoint).resolve().parts),
+            default=None,
+        )
+        fstype = best_match.fstype if best_match else ""
+        return fstype.casefold() in NETWORK_FS_TYPES
+    except (PermissionError, OSError):
+        return False
+
+
 class sqliteLogHandler(Handler):
     """Log handler that stores Snakemake events in a SQLite database.
 
@@ -57,7 +107,7 @@ class sqliteLogHandler(Handler):
         super().__init__()
 
         self.db_manager = Database(db_path=db_path, auto_migrate=True, create_db=True)
-        self._configure_sqlite_concurrency(self.db_manager.engine)
+        self._configure_sqlite(self.db_manager.engine)
         self.common_settings = common_settings
 
         self.event_handlers: dict[str, EventHandler] = {  # type: ignore
@@ -80,25 +130,35 @@ class sqliteLogHandler(Handler):
             "dryrun": self.common_settings.dryrun,
         }
 
-    def _configure_sqlite_concurrency(self, engine: Any) -> None:
-        """Make concurrent access from several Snakemake instances robust.
+    def _configure_sqlite(self, engine: Any) -> None:
+        """Set concurrency and filesystem-aware PRAGMAs on every pooled connection.
 
-        SQLite defaults to a busy timeout of 0, so when another process holds
-        the write lock a query fails immediately with "database is locked".
-        Setting ``busy_timeout`` makes the connection wait (and internally
-        retry) for the lock instead. Applied to every pooled connection via the
-        ``connect`` event.
+        ``busy_timeout`` makes a writer wait for the lock; Python's sqlite3 defaults to only 5 s.
+        The journal pragmas follow Snakemake's persistence db:
+        the default DELETE journal creates, fsyncs and unlinks a file per commit,
+        which is costly metadata traffic on network filesystems.
 
-        WAL mode is intentionally not enabled: the database may live on a
-        network filesystem (NFS/Lustre/GPFS), where WAL's shared-memory index
-        is unreliable. ``busy_timeout`` is filesystem-agnostic.
+        WAL mode is intentionally not enabled:
+        the database may live on a network filesystem (NFS/Lustre/GPFS),
+        where WAL's shared-memory index is unreliable.
         """
+        if is_network_filesystem(self.db_manager.db_path):
+            pragmas = [
+                "journal_mode=PERSIST",
+                "synchronous=OFF",
+                "temp_store=MEMORY",
+                "cache_size=-64000",
+            ]
+        else:
+            pragmas = ["journal_mode=TRUNCATE", "synchronous=NORMAL"]
+        pragmas.append(f"busy_timeout={self.SQLITE_BUSY_TIMEOUT_MS}")
 
         @event.listens_for(engine, "connect")
         def _set_sqlite_pragma(dbapi_connection, connection_record):  # type: ignore[no-untyped-def]
             cursor = dbapi_connection.cursor()
             try:
-                cursor.execute(f"PRAGMA busy_timeout = {self.SQLITE_BUSY_TIMEOUT_MS}")
+                for pragma in pragmas:
+                    cursor.execute(f"PRAGMA {pragma}")
             finally:
                 cursor.close()
 
