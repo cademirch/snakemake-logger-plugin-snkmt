@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.9...v0.2.0) (2026-11-20)
+
+
+### Features
+
+* apply filesystem-aware SQLite pragmas like Snakemake's persistence db ([#30](https://github.com/cademirch/snakemake-logger-plugin-snkmt/issues/30)) ([dbb6c80](https://github.com/cademirch/snakemake-logger-plugin-snkmt/commit/dbb6c802e16d0136e1f38a8374b635c4ecfc555b))
+
 ## [0.1.9](https://github.com/cademirch/snakemake-logger-plugin-snkmt/compare/v0.1.8...v0.1.9) (2026-10-09)
 
 
